@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrador - Editar Club</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.7.3/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        escom: { main: '#0EA5E9', dark: '#0284C7', deep: '#0F172A', soft: '#F0F9FF', admin: '#4F46E5', adminDark: '#4338ca' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    borderRadius: { 'super': '2rem' },
+                    boxShadow: { 'soft': '0 20px 40px -15px rgba(79, 70, 229, 0.1)' }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .glass-panel { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.6); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col relative">
+
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-black text-slate-800 mb-8">Editar Club: <span class="text-escom-admin font-bold" th:text="${club.nombre}">[Nombre del Club]</span></h1>
+
+        <!-- Formulario de Edición de Club -->
+        <form th:action="@{/administrador/editar-club}" method="post" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <input type="hidden" name="id" th:value="${club.id}" />
+
+            <!-- Columna Izquierda: Información General y Logística -->
+            <div class="space-y-6">
+                <!-- Sección 1: Información General -->
+                <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-xl shadow-indigo-50/50">
+                    <h4 class="text-sm font-bold text-escom-admin uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <i class="ph-duotone ph-info text-lg"></i> 1. Información General
+                    </h4>
+
+                    <!-- Nombre del Club -->
+                    <div class="form-control mb-4">
+                        <label class="label"><span class="label-text font-bold text-slate-600">Nombre del Club</span></label>
+                        <input type="text" name="nombre" th:value="${club.nombre}" placeholder="Ej. Club de Ajedrez" class="input input-bordered rounded-xl bg-slate-50 focus:bg-white focus:border-escom-admin w-full" />
+                    </div>
+
+                    <!-- Tipo de Club -->
+                    <div class="form-control mb-4">
+                        <label class="label"><span class="label-text font-bold text-slate-600">Tipo de Club</span></label>
+                        <select name="tipo" class="select select-bordered rounded-xl bg-slate-50 focus:bg-white w-full">
+                            <option value="Académico" th:selected="${club.tipo == 'Académico'}">Académico</option>
+                            <option value="Cultural" th:selected="${club.tipo == 'Cultural'}">Cultural</option>
+                            <option value="Deportivo" th:selected="${club.tipo == 'Deportivo'}">Deportivo</option>
+                        </select>
+                    </div>
+
+                    <!-- Objetivo -->
+                    <div class="form-control mb-4">
+                        <label class="label"><span class="label-text font-bold text-slate-600">Objetivo</span></label>
+                        <textarea name="objetivo" th:text="${club.objetivo}" class="textarea textarea-bordered rounded-xl bg-slate-50 focus:bg-white h-24 text-sm" placeholder="Propósito principal..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Sección 2: Logística -->
+                <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-xl shadow-indigo-50/50">
+                    <h4 class="text-sm font-bold text-escom-admin uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <i class="ph-duotone ph-map-pin text-lg"></i> 2. Logística
+                    </h4>
+                    <div class="grid grid-cols-2 gap-6">
+                        <!-- Ubicación -->
+                        <div class="form-control">
+                            <label class="label"><span class="label-text font-bold text-slate-600 text-xs">Ubicación</span></label>
+                            <input type="text" name="ubicacion" th:value="${club.ubicacion}" placeholder="Ej. Lab 3" class="input input-bordered input-sm rounded-lg bg-slate-50 focus:bg-white focus:border-escom-admin" />
+                        </div>
+
+                        <!-- Horario -->
+                        <div class="form-control">
+                            <label class="label"><span class="label-text font-bold text-slate-600 text-xs">Horario</span></label>
+                            <input type="text" name="horario" th:value="${club.horario}" placeholder="Ej. Lun-Vie 15h" class="input input-bordered input-sm rounded-lg bg-slate-50 focus:bg-white focus:border-escom-admin" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna Derecha: Staff, Cronograma y Botón para Registrar Club -->
+            <div class="space-y-6">
+                <!-- Sección 3: Staff Directivo -->
+                <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-xl shadow-indigo-50/50">
+                    <h4 class="text-sm font-bold text-escom-admin uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <i class="ph-duotone ph-users text-lg"></i> 3. Staff Directivo
+                    </h4>
+
+                    <!-- Coordinador del Club -->
+                    <div class="form-control mb-4">
+                        <label class="label"><span class="label-text font-bold text-slate-600">Coordinador</span></label>
+                        <input type="text" name="usuarioCoordinador" 
+                            th:value="${club.coordinadorClub != null ? club.coordinadorClub.usuario : ''}"
+                            placeholder="Escribe el nombre de usuario del coordinador" 
+                            class="input input-bordered rounded-xl bg-slate-50 focus:bg-white focus:border-escom-admin w-full" />
+                    </div>
+
+                    <!-- Alumno Presidente -->
+                    <div class="form-control">
+                        <label class="label"><span class="label-text font-bold text-slate-600">Alumno Presidente</span></label>
+                        <input type="text" name="boletaPresidente" 
+                             th:value="${club.presidenteClub != null ? club.presidenteClub.boleta : ''}"
+                            placeholder="Escribe el número de boleta del alumno" 
+                            class="input input-bordered rounded-xl bg-slate-50 focus:bg-white focus:border-escom-admin w-full" />
+                    </div>
+                </div>
+
+                <!-- Sección 4 - Cronograma -->
+                <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-xl shadow-indigo-50/50">
+                    <h4 class="text-sm font-bold text-escom-admin uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <i class="ph-duotone ph-calendar text-lg"></i> 4. Cronograma
+                    </h4>
+
+                    <div class="form-control mt-4">
+                        <label class="label"><span class="label-text font-bold text-slate-600 text-xs">Cronograma (PDF)</span></label>
+                        <input type="file" name="archivoCronograma" class="file-input file-input-bordered file-input-sm w-full rounded-lg bg-slate-50 focus:bg-white focus:border-escom-admin" accept=".pdf" />
+                    </div>
+                </div>
+
+                <!-- Botón para guardar los cambios -->
+                <div class="lg:col-span-2 flex justify-center pt-6">
+                    <button type="submit"
+                        class="btn bg-escom-admin hover:bg-indigo-700 text-white border-none rounded-xl px-8 shadow-lg shadow-indigo-200/50 transform hover:-translate-y-1 transition-all">
+                        Guardar Cambios
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

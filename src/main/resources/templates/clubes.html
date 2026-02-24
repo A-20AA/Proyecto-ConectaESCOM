@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clubes | Conecta ESCOM</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.7.3/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        escom: {
+                            main: '#0EA5E9',
+                            dark: '#0284C7',
+                            deep: '#0F172A',
+                            soft: '#F0F9FF',
+                            surface: '#FFFFFF',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 20px 40px -15px rgba(14, 165, 233, 0.1)',
+                        'glow': '0 0 20px rgba(14, 165, 233, 0.3)',
+                    },
+                    borderRadius: {
+                        'super': '2rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .card-hover-effect {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-hover-effect:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px -15px rgba(14, 165, 233, 0.2);
+        }
+
+        .club-item {
+            transition: all 0.3s ease-out;
+        }
+        .club-item.hidden-item {
+            opacity: 0;
+            transform: scale(0.95);
+            position: absolute; 
+            pointer-events: none;
+        }
+        .filter-btn {
+            transition: all 0.25s ease;
+        }
+
+        .filter-btn.active-filter {
+            border-width: 3px; 
+            border-style: dashed;
+            font-weight: bolder;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col relative selection:bg-escom-main selection:text-white">
+
+    <!-- Fondo Atmosférico -->
+    <div class="fixed inset-0 -z-50 overflow-hidden pointer-events-none">
+        <div class="absolute -top-[10%] left-[20%] w-[50rem] h-[50rem] rounded-full bg-blue-100/40 blur-[120px] mix-blend-multiply animate-pulse"></div>
+        <div class="absolute top-[40%] -right-[10%] w-[40rem] h-[40rem] rounded-full bg-sky-200/30 blur-[100px] mix-blend-multiply"></div>
+    </div>
+
+    <!-- Header Flotante -->
+    <nav class="fixed top-4 left-0 right-0 z-50 flex justify-center px-4">
+        <div class="navbar w-full max-w-6xl rounded-full bg-white/80 backdrop-blur-md shadow-lg border border-white/40 pl-6 pr-2">
+            
+            <div class="navbar-start">
+                <div class="dropdown">
+                    <label tabindex="0" class="btn btn-ghost lg:hidden rounded-full text-escom-main">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
+                    </label>
+                    <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow-xl bg-white rounded-2xl w-52 border border-slate-100">
+                        <li><a href="#" class="font-medium">Inicio</a></li>
+                    </ul>
+                </div>
+                <a href="/" class="text-xl font-bold tracking-tight text-slate-800 flex items-center gap-2">
+                    <div class="w-8 h-8 bg-escom-main rounded-lg flex items-center justify-center text-white text-xs font-bold shadow-md shadow-blue-200">IPN</div>
+                    Conecta<span class="text-escom-main">ESCOM</span>
+                </a>
+            </div>
+
+            <div class="navbar-center hidden lg:flex">
+                <ul class="menu menu-horizontal px-1 gap-1 font-medium text-sm">
+                    <li><a th:href="@{/inicio}" class="rounded-full bg-escom-soft text-escom-dark font-bold">Inicio</a></li>
+                </ul>
+            </div>
+
+            <div class="navbar-end">
+                <a th:href="@{/login}" class="btn bg-white border border-escom-main text-escom-main hover:bg-escom-main hover:text-white hover:border-escom-main rounded-full px-6 gap-2 normal-case text-base shadow-sm transition-all duration-300 group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition-transform">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                        <polyline points="10 17 15 12 10 7"></polyline>
+                        <line x1="15" y1="12" x2="3" y2="12"></line>
+                    </svg>
+                    Iniciar sesión
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl mx-auto pt-32 pb-20 px-4 sm:px-6 w-full">
+
+        <header class="text-center max-w-3xl mx-auto mb-16">
+            <h1 class="text-4xl md:text-6xl font-black text-escom-deep tracking-tight mb-4">
+                Encuentra tu <span class="text-transparent bg-clip-text bg-gradient-to-r from-escom-main to-purple-500">tribu.</span>
+            </h1>
+            <p class="text-slate-500 text-lg mb-8 leading-relaxed">
+                Explora los clubes activos en ESCOM. Desde robótica de competencia hasta danza folklórica, hay un espacio para ti.
+            </p>
+        </header>
+
+        <!-- Filtros Dinámicos -->
+        <div class="flex flex-wrap justify-center gap-3 mb-12">
+            <!-- Todos -->
+            <button onclick="filterClubs('all', this)"
+                class="btn rounded-full bg-white text-escom-main border border-escom-main hover:bg-escom-main/10 px-6 shadow-sm hover:shadow-md transition-all filter-btn active">
+                Todos
+            </button>
+
+            <!-- Académicos -->
+            <button onclick="filterClubs('Académico', this)"
+                class="btn rounded-full bg-white text-blue-500 border border-blue-400 hover:bg-blue-50 px-6 shadow-sm hover:shadow-md transition-all filter-btn">
+                <i class="ph-duotone ph-cpu text-lg"></i>
+                Académicos
+            </button>
+
+            <!-- Culturales -->
+            <button onclick="filterClubs('Cultural', this)"
+                class="btn rounded-full bg-white text-purple-500 border border-purple-400 hover:bg-purple-50 px-6 shadow-sm hover:shadow-md transition-all filter-btn">
+                <i class="ph-duotone ph-paint-brush text-lg"></i>
+                Culturales
+            </button>
+
+            <!-- Deportivos -->
+            <button onclick="filterClubs('Deportivo', this)"
+                class="btn rounded-full bg-white text-orange-500 border border-orange-400 hover:bg-orange-50 px-6 shadow-sm hover:shadow-md transition-all filter-btn">
+                <i class="ph-duotone ph-trophy text-lg"></i>
+                Deportivos
+            </button>
+        </div>
+
+        <!-- Grid de Clubes (2 Columnas para diseño expandido) -->
+        <div id="clubsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-8 relative min-h-[500px]">
+
+             <!-- Generar dinámicamente la información de los Clubes -->
+            <div th:each="club : ${clubes}" class="club-item card bg-white border border-slate-100 shadow-md hover:shadow-xl hover:shadow-slate-300/70 rounded-super overflow-hidden group card-hover-effect flex flex-col h-full" 
+                th:data-category="${club.tipo}" th:id="'club-' + ${club.id}">
+
+                <!-- Imagen -->
+                <figure class="h-64 relative overflow-hidden shrink-0">
+                    <img th:src="@{ '/' + ${club.rutaArchivoImagen} }"
+                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"/>
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent"></div>
+                    <div class="absolute bottom-4 left-4 text-white">
+                        <span class="badge border-none text-white font-bold mb-2 shadow-sm"
+                            th:classappend="${club.tipo == 'Académico' ? 'bg-escom-main' : (club.tipo == 'Cultural' ? 'bg-purple-600' : 'bg-orange-500')}"
+                            th:text="${club.tipo}">
+                        </span>
+                    </div>
+                </figure>
+
+                <!-- Datos del Club -->
+                <div class="card-body p-8 flex flex-col h-full">
+                    <div class="flex-1 flex flex-col gap-4">
+
+                        <!-- Nombre del Club -->
+                        <h2 class="text-3xl font-black text-escom-deep leading-tight transition-colors duration-300"
+                            th:classappend="${club.tipo == 'Académico' ? 'group-hover:text-escom-main' : (club.tipo == 'Cultural' ? 'group-hover:text-purple-600' : 'group-hover:text-orange-500')}"
+                            th:text="${club.nombre}">
+                            Nombre del Club
+                        </h2>
+
+                        <!-- Objetivo -->
+                        <p class="text-sm text-slate-500 leading-relaxed max-w-xl"
+                            th:text="${club.objetivo}">
+                            Objetivo
+                        </p>
+
+                        <!-- Datos del coordinador y horario -->
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-2 text-sm text-slate-700 group">
+                                <svg class="w-4 h-4 shrink-0 transition-colors duration-300" 
+                                    th:classappend="${club.tipo == 'Académico' ? 'text-escom-main' : (club.tipo == 'Cultural' ? 'text-purple-600' : 'text-orange-500')}"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                <span class="font-medium" 
+                                    th:text="${club.coordinadorClub?.nombre} + ' ' + ${club.coordinadorClub?.apellidos}">
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm text-slate-700">
+                                <svg class="w-4 h-4 shrink-0 transition-colors duration-300"
+                                    th:classappend="${club.tipo == 'Académico' ? 'text-escom-main' : (club.tipo == 'Cultural' ? 'text-purple-600' : 'text-orange-500')}"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span class="font-medium" 
+                                    th:text="${club.horario}">
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <!-- Empty State (Oculto por defecto) -->
+        <div id="emptyState" class="hidden text-center py-20">
+            <div class="inline-block p-6 rounded-full bg-slate-50 mb-4">
+                <i class="ph-duotone ph-magnifying-glass text-4xl text-slate-300"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-700">No encontramos clubes</h3>
+            <p class="text-slate-400">Intenta con otra categoría o término de búsqueda.</p>
+        </div>
+
+    </main>
+
+    <footer class="bg-escom-deep text-slate-300 py-12 mt-auto">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <p>&copy; 2025 Instituto Politécnico Nacional. Conecta ESCOM.</p>
+        </div>
+    </footer>
+
+    <script>
+        function filterClubs(category, btn) {
+            const cards = document.querySelectorAll('.club-item');
+            const emptyState = document.getElementById('emptyState');
+            let visibleCount = 0;
+
+            // Actualizar botones
+            document.querySelectorAll('.filter-btn').forEach(b => {
+                b.classList.remove('active-filter');
+            });
+            btn.classList.add('active-filter');
+
+            // Filtrar lógica
+            cards.forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.classList.remove('hidden-item');
+                    // Restaurar layout grid si estaba oculto
+                    card.style.display = ''; 
+                    visibleCount++;
+                } else {
+                    card.classList.add('hidden-item');
+                    // Pequeño timeout para que la animación se vea antes de display:none
+                    setTimeout(() => {
+                        if(card.classList.contains('hidden-item')) card.style.display = 'none';
+                    }, 300);
+                }
+            });
+
+            // Mostrar estado vacío
+            if (visibleCount === 0) {
+                setTimeout(() => emptyState.classList.remove('hidden'), 300);
+                document.getElementById('clubsGrid').style.minHeight = '0';
+            } else {
+                emptyState.classList.add('hidden');
+                document.getElementById('clubsGrid').style.minHeight = '500px';
+            }
+        }
+
+        // Buscador simple
+        document.getElementById('searchInput').addEventListener('keyup', function(e) {
+            const term = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.club-item');
+            
+            cards.forEach(card => {
+                const text = card.innerText.toLowerCase();
+                if (text.includes(term)) {
+                    card.classList.remove('hidden-item');
+                    card.style.display = '';
+                } else {
+                    card.classList.add('hidden-item');
+                    card.style.display = 'none';
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

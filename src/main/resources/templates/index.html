@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conecta ESCOM | Equipo 8</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.7.3/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        escom: {
+                            main: '#0EA5E9',   
+                            dark: '#0284C7',   
+                            deep: '#0F172A',   
+                            soft: '#F0F9FF',   
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style> 
+        body { font-family: 'Inter', sans-serif; } 
+        
+        /* Utilidades para ocultar scrollbar pero permitir funcionalidad */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Clase para evitar que el texto se seleccione mientras arrastras */
+        .noselect {
+            user-select: none; 
+            -webkit-user-select: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <nav class="fixed top-4 left-0 right-0 z-50 flex justify-center px-4">
+        <div class="navbar w-full max-w-6xl rounded-full bg-white/80 backdrop-blur-md shadow-lg border border-white/40 pl-6 pr-2">
+            
+            <div class="navbar-start">
+                <div class="dropdown">
+                    <label tabindex="0" class="btn btn-ghost lg:hidden rounded-full text-escom-main">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
+                    </label>
+                    <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow-xl bg-white rounded-2xl w-52 border border-slate-100">
+                        <li><a href="#" class="font-medium">Inicio</a></li>
+                    </ul>
+                </div>
+                <a class="text-xl font-bold tracking-tight text-slate-800 flex items-center gap-2">
+                    <div class="w-8 h-8 bg-escom-main rounded-lg flex items-center justify-center text-white text-xs font-bold shadow-md shadow-blue-200">IPN</div>
+                    Conecta<span class="text-escom-main">ESCOM</span>
+                </a>
+            </div>
+
+            <div class="navbar-center hidden lg:flex">
+                <ul class="menu menu-horizontal px-1 gap-1 font-medium text-sm">
+                    <li><a th:href="@{/clubes}" class="rounded-full bg-escom-soft text-escom-dark font-bold">Explorar Clubes</a></li>                    
+                </ul>
+            </div>
+
+            <div class="navbar-end">
+                <a th:href="@{/login}" class="btn bg-white border border-escom-main text-escom-main hover:bg-escom-main hover:text-white hover:border-escom-main rounded-full px-6 gap-2 normal-case text-base shadow-sm transition-all duration-300 group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition-transform">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                        <polyline points="10 17 15 12 10 7"></polyline>
+                        <line x1="15" y1="12" x2="3" y2="12"></line>
+                    </svg>
+                    Iniciar sesión
+                </a>
+            </div>
+        </div>
+    </nav>
+   
+    <section class="relative pt-28 pb-4 lg:pt-36 lg:pb-6 px-6 max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+
+        <div class="flex-1 text-center lg:text-left space-y-6 z-10">
+            
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-escom-main text-xs font-bold uppercase tracking-wider mb-2">
+                <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-sky-500"></span>
+                </span>
+                Convocatorias Abiertas 2026-1
+            </div>
+
+            <h1 class="text-5xl lg:text-7xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                Explora, Crea y <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-escom-main to-blue-600">Conecta.</span>
+            </h1>
+            
+            <p class="text-lg text-slate-500 leading-relaxed max-w-xl mx-auto lg:mx-0">
+                El sistema oficial para gestionar tu vida extracurricular en la ESCOM. Únete a clubes académicos, deportivos y culturales.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
+                <a th:href="@{/clubes}" class="btn btn-lg bg-escom-main hover:bg-escom-dark text-white border-none rounded-full px-8 shadow-lg shadow-blue-500/30 transition-transform hover:-translate-y-1">
+                    Explorar Clubes
+                </a>
+            <a th:href="@{/alumno/registro}"
+            class="btn btn-lg btn-ghost bg-white/50 hover:bg-white text-slate-700 border border-slate-200 rounded-full px-8 backdrop-blur-sm flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" 
+                    class="h-5 w-5 text-escom-main" 
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                        d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a3 3 0 11-6 0 3 3 0 016 0zm-3 7a6 6 0 00-6 6h12a6 6 0 00-6-6z" />
+                </svg>
+                Regístrate
+            </a>
+            </div>
+
+            <div class="pt-8 flex items-center justify-center lg:justify-start gap-8 opacity-80">
+                <div>
+                    <p class="text-2xl font-bold text-slate-800" th:text="${totalClubes}"></p>
+                    <p class="text-xs text-slate-500 uppercase font-semibold">Clubes Activos</p>
+                </div>
+                <div class="w-px h-8 bg-slate-300"></div>
+                <div>
+                    <p class="text-2xl font-bold text-slate-800" th:text="${totalAlumnos}"></p>
+                    <p class="text-xs text-slate-500 uppercase font-semibold">Alumnos</p>
+                </div>
+                <div class="w-px h-8 bg-slate-300"></div>
+                <div>
+                    <p class="text-2xl font-bold text-slate-800">Oficial</p>
+                    <p class="text-xs text-slate-500 uppercase font-semibold">Validado IPN</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex-1 relative w-full max-w-lg lg:max-w-xl">
+            
+            <div class="absolute -inset-4 bg-gradient-to-r from-blue-100 to-purple-100 rounded-[3rem] blur-2xl opacity-60 -z-10"></div>
+            
+            <div class="relative rounded-[3rem] overflow-hidden shadow-2xl shadow-blue-900/20 border-4 border-white transform rotate-2 hover:rotate-0 transition-all duration-500">
+                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2671&auto=format&fit=crop" alt="Comunidad ESCOM" class="w-full h-auto object-cover" />
+                
+                <div class="absolute bottom-6 left-6 bg-white/90 backdrop-blur p-4 rounded-2xl shadow-lg border border-white/50 flex items-center gap-3">
+                    <div class="bg-green-100 p-2 rounded-full text-green-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 font-bold">Inscripciones</p>
+                        <p class="text-sm font-bold text-slate-800">Abiertas</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </section>    
+
+    <main class="flex-grow max-w-[95rem] mx-auto pt-12 pb-10 px-4 w-full">
+    
+        <div class="flex flex-col md:flex-row justify-between items-start mb-4 px-16">
+            <div class="text-left">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 mt-2">
+                    Clubes destacados
+                </h2>
+                <p class="text-slate-500">
+                    Desliza o usa las flechas para explorar
+                </p>
+            </div>
+            
+            <div class="hidden md:flex items-center gap-4">
+                <a th:href="@{/clubes}"
+                    class="btn border bg-slate-50 border-slate-200 text-slate-500 hover:border-escom-main hover:text-escom-main rounded-full px-8 py-2 hover:bg-white transition-all gap-2 group leading-none">
+                    Ver todos los clubes
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        class="h-4 w-4 group-hover:translate-x-1 transition-transform"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 5l7 7-7 7" />
+                    </svg>
+                </a>
+
+                <!-- Flechas carrusel -->
+                <div class="flex gap-2">
+                    <button onclick="scrollCarousel(-1)" class="btn btn-circle btn-outline border-slate-200 text-slate-400 hover:bg-escom-main hover:border-escom-main hover:text-white transition-all z-10 relative">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    <button onclick="scrollCarousel(1)" class="btn btn-circle btn-outline border-slate-200 text-slate-400 hover:bg-escom-main hover:border-escom-main hover:text-white transition-all z-10 relative">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <section>
+            <div id="clubsCarousel" class="carousel carousel-center w-full p-10 space-x-8 bg-transparent cursor-grab active:cursor-grabbing no-scrollbar -mx-4 md:mx-0 overflow-x-auto noselect">
+
+                <!-- Generar dinámicamente la información de los Clubes -->
+                <div class="carousel-item" th:each="club : ${clubes}">
+                    <div class="card-wrapper w-80 md:w-96 hover:-translate-y-2 transition-transform duration-300 rounded-[2rem] shadow-xl hover:shadow-2xl border border-slate-100 bg-white group">
+                        <div class="card-inner overflow-hidden rounded-[2rem] bg-white h-full flex flex-col">
+                            
+                             <!-- Imagen del Club -->
+                            <figure class="h-44 overflow-hidden relative shrink-0">
+                                <img th:src="@{ '/' + ${club.rutaArchivoImagen} }"
+                                    class="w-full h-full object-cover pointer-events-none group-hover:scale-105 transition-transform duration-700" />
+
+                                <div th:if="${club.tipo == 'Académico'}"
+                                    class="absolute top-4 right-4 badge bg-white/90 backdrop-blur font-bold shadow-sm border-none text-escom-main">
+                                    Académico
+                                </div>
+
+                                <div th:if="${club.tipo == 'Deportivo'}"
+                                    class="absolute top-4 right-4 badge bg-white/90 backdrop-blur font-bold shadow-sm border-none text-orange-500">
+                                    Deportivo
+                                </div>
+
+                                <div th:if="${club.tipo == 'Cultural'}"
+                                    class="absolute top-4 right-4 badge bg-white/90 backdrop-blur font-bold shadow-sm border-none text-purple-600">
+                                    Cultural
+                                </div>
+                            </figure>
+
+                             <!-- Contenido -->
+                            <div class="card-body p-5 flex flex-col flex-grow">
+
+                                <!-- Nombre del Club -->
+                                <h2 class="card-title text-xl font-bold text-slate-800 mb-1 transition-colors"
+                                    th:text="${club.nombre}"
+                                    th:classappend="${club.tipo == 'Académico'} ? ' group-hover:text-escom-main' : (${club.tipo == 'Deportivo'} ? ' group-hover:text-orange-600' : ' group-hover:text-purple-600')">  
+                                </h2>
+                                
+                                <!-- Objetivo -->
+                                <p class="text-xs text-slate-400 mb-3 line-clamp-2 leading-relaxed">
+                                    Aprende electrónica, diseño de circuitos y compite en torneos nacionales de robótica.
+                                </p>
+
+                                <!-- Datos -->
+                                <div class="space-y-2 mb-4">
+
+                                    <!-- Coordinador -->
+                                    <div class="flex items-center gap-2 text-sm text-slate-600">
+                                        <svg class="w-4 h-4 shrink-0" 
+                                            th:classappend="${club.tipo == 'Académico'} ? ' text-escom-main' : (${club.tipo == 'Deportivo'} ? ' text-orange-500' : ' text-purple-600')"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                        <span class="font-medium truncate" th:text="${club.coordinadorClub?.nombre}"></span>
+                                    </div>
+
+                                    <!-- Horario -->
+                                    <div class="flex items-center gap-2 text-sm text-slate-600">
+                                        <svg class="w-4 h-4 shrink-0" 
+                                            th:classappend="${club.tipo == 'Académico'} ? ' text-escom-main' : (${club.tipo == 'Deportivo'} ? ' text-orange-500' : ' text-purple-600')"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <span class="truncate" th:text="${club.horario}"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Ver Detalles -->
+                                <div class="card-actions flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-auto pt-3 border-t border-slate-50">
+                                    <a th:href="@{/clubes}"
+                                        class="btn btn-sm rounded-full border-none transition-all duration-300 shadow-sm group px-4 w-full sm:w-auto justify-center sm:justify-between"
+                                        th:classappend="${club.tipo == 'Académico'} ? ' bg-escom-soft text-escom-main hover:bg-escom-main hover:text-white hover:shadow-blue-200' :
+                                               (${club.tipo == 'Deportivo'} ? ' bg-orange-50 text-orange-600 hover:bg-orange-500 hover:text-white hover:shadow-orange-200' :
+                                               ' bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white hover:shadow-purple-200')">
+                                        <span class="font-bold text-xs">Ver detalles</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+       
+            <div class="mt-8 text-center">
+                <a th:href="@{/clubes}" class="btn btn-lg bg-slate-50 border border-slate-500 text-slate-600 hover:border-escom-main hover:text-escom-main hover:bg-white rounded-full px-12 shadow-sm hover:shadow-md transition-all gap-3 group">
+                    Ver todos los clubes
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:translate-y-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-escom-deep text-slate-300 py-12 mt-auto">
+        <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="md:col-span-2">
+                <a class="text-2xl font-bold tracking-tight text-white flex items-center gap-2 mb-4">
+                    <div class="w-8 h-8 bg-escom-main rounded-lg flex items-center justify-center text-white text-xs">IPN</div>
+                    Conecta<span class="text-escom-main">ESCOM</span>
+                </a>
+                <p class="mb-4 text-slate-400 text-sm leading-relaxed max-w-sm">
+                    Plataforma institucional para la gestión centralizada de clubes académicos, culturales y deportivos.
+                </p>                
+            </div>
+            <div>
+                <h3 class="font-bold text-white mb-4">Plataforma</h3>
+                <ul class="space-y-2 text-sm">
+                    <li><a th:href="@{/clubes}" class="hover:text-escom-main transition">Explorar Clubes</a></li>
+                    <li><a th:href="@{/login}" class="hover:text-escom-main transition">Iniciar Sesión</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="font-bold text-white mb-4">Créditos</h3>
+                <div class="bg-slate-800/50 rounded-xl p-4 border border-slate-700">
+                    <p class="text-sm font-semibold text-white mb-1">Desarrollado por:</p>
+                    <p class="text-escom-main font-bold text-lg">Equipo 8</p>
+                    <p class="text-xs text-slate-500 mt-2">ISC - ESCOM IPN</p>
+                </div>
+            </div>
+        </div>
+        <div class="border-t border-slate-800 mt-12 pt-8 text-center text-xs text-slate-600 px-6">
+            <p>&copy; 2025 Instituto Politécnico Nacional. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        const slider = document.getElementById('clubsCarousel');
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        // Cuando presionas el click
+        slider.addEventListener('mousedown', (e) => {
+            isDown = true;
+            slider.classList.add('active');
+            startX = e.pageX - slider.offsetLeft;
+            scrollLeft = slider.scrollLeft;
+            slider.style.cursor = 'grabbing'; 
+        });
+
+        // Cuando sales del area o sueltas el click
+        slider.addEventListener('mouseleave', () => {
+            isDown = false;
+            slider.style.cursor = 'grab';
+        });
+        slider.addEventListener('mouseup', () => {
+            isDown = false;
+            slider.style.cursor = 'grab';
+        });
+
+        // Cuando mueves el mouse presionando
+        slider.addEventListener('mousemove', (e) => {
+            if(!isDown) return;
+            e.preventDefault(); // Evita seleccionar texto
+            const x = e.pageX - slider.offsetLeft;
+            const walk = (x - startX) * 2; // Velocidad del scroll
+            slider.scrollLeft = scrollLeft - walk;
+        });
+
+        // Función para las flechas (Botones)
+        function scrollCarousel(direction) {
+            const scrollAmount = 400; 
+            slider.scrollBy({
+                left: direction * scrollAmount,
+                behavior: 'smooth'
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coordinador Editar Club | Conecta ESCOM</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.7.3/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        escom: {
+                            main: '#0EA5E9',
+                            dark: '#0369A1',
+                            deep: '#1E293B',
+                            soft: '#F8FAFC',
+                            light: '#F1F5F9',
+                            accent: '#64748B'
+                        }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    borderRadius: { 'super': '1.5rem' }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+        .form-card { background: white; border-radius: 1.5rem; border: 1px solid #f1f5f9; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); }
+    </style>
+</head>
+<body class="bg-escom-soft text-escom-deep min-h-screen antialiased">
+
+    <main class="max-w-4xl mx-auto py-16 px-6">
+        
+        <div class="flex items-center gap-4 mb-8">
+            <a th:href="@{/coordinador/inicio}" class="btn btn-circle btn-ghost text-escom-main">
+                <i class="ph-bold ph-arrow-left text-2xl"></i>
+            </a>
+            <div>
+                <p class="text-escom-accent font-medium">Conecta <span class="text-escom-main">ESCOM</span></p>
+                <h1 class="text-3xl font-extrabold tracking-tight">Panel de Edición: <span th:text="${club.nombre}">Nombre del Club</span></h1>               
+            </div>
+        </div>
+
+        <!-- Mensaje de éxito -->
+        <div th:if="${success != null}" class="alert alert-success p-4 mb-6 bg-green-100 text-green-800 rounded-xl border border-green-300 shadow-lg transform transition-all">
+            <p th:text="${success}"></p>
+        </div>
+
+        <!-- Mensaje de error -->
+        <div th:if="${error != null}" class="alert alert-error p-4 mb-6 bg-red-100 text-red-800 rounded-xl border border-red-300 shadow-lg transform transition-all">
+            <p th:text="${error}"></p>
+        </div>
+
+        <div class="grid grid-cols-1 gap-8">
+            
+            <!-- SECCIÓN 1: Imagen del Club -->
+            <section class="form-card p-8">
+                <div class="flex items-center gap-3 mb-6">
+                    <i class="ph-fill ph-image-square text-escom-main text-2xl"></i>
+                    <h2 class="text-xl font-bold">Imagen de Portada</h2>
+                </div>
+                
+                <div class="flex flex-col md:flex-row items-center gap-8">
+                    <div class="relative group">
+                        <div class="w-48 h-48 rounded-super overflow-hidden border-4 border-white shadow-xl">
+                            <img th:src="@{ '/' + ${club.rutaArchivoImagen} }" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                        </div>
+                        <div class="absolute -bottom-2 -right-2 bg-escom-main text-white p-2 rounded-lg shadow-lg">
+                            <i class="ph-bold ph-pencil-simple"></i>
+                        </div>
+                    </div>
+
+                    <form th:action="@{/coordinador/editar-club/foto}" method="post" enctype="multipart/form-data" class="flex-1 space-y-4 w-full">
+                        <input type="hidden" name="id" th:value="${club.id}" />
+                        <div class="form-control">
+                            <label class="label"><span class="label-text font-bold text-slate-600">Subir nueva imagen</span></label>
+                            <input type="file" name="imagenClub" accept="image/*" class="file-input file-input-bordered file-input-info w-full" />
+                        </div>
+                        <button type="submit" class="btn bg-escom-main border-none text-white hover:bg-escom-dark shadow-lg shadow-blue-200 px-8">
+                            Actualizar Imagen
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- SECCIÓN 2: Información del Club -->
+            <section class="form-card p-8">
+                <div class="flex items-center gap-3 mb-8">
+                    <i class="ph-fill ph-note-pencil text-escom-main text-2xl"></i>
+                    <h2 class="text-xl font-bold">Información General</h2>
+                </div>
+
+                <form th:action="@{/coordinador/editar-club/datos}" method="post" class="space-y-6" enctype="multipart/form-data">
+                    <input type="hidden" name="id" th:value="${club.id}" />
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Nombre -->
+                        <div class="form-control">
+                            <label class="label"><span class="label-text font-bold text-slate-600">Nombre del Club</span></label>
+                            <input type="text" name="nombre" th:value="${club.nombre}" class="input input-bordered focus:border-escom-main rounded-xl" required />
+                        </div>
+
+                         <!-- Tipo -->
+                        <div class="form-control">
+                            <label class="label"><span class="label-text font-bold text-slate-600">Categoría</span></label>
+                            <select name="tipo" class="select select-bordered focus:border-escom-main rounded-xl" required>
+                                <option value="Académico" th:selected="${club.tipo == 'Académico'}">Académico</option>
+                                <option value="Cultural" th:selected="${club.tipo == 'Cultural'}">Cultural</option>
+                                <option value="Deportivo" th:selected="${club.tipo == 'Deportivo'}">Deportivo</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Objetivo -->
+                    <div class="form-control">
+                        <label class="label"><span class="label-text font-bold text-slate-600">Objetivo</span></label>
+                        <textarea name="objetivo" rows="4" class="textarea textarea-bordered focus:border-escom-main rounded-xl text-base" required th:text="${club.objetivo}"></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Ubicación -->
+                        <div class="form-control">
+                            <label class="label"><span class="label-text font-bold text-slate-600">Ubicación / Laboratorio</span></label>
+                            <div class="relative">
+                                <i class="ph-fill ph-map-pin absolute left-4 top-4 text-escom-main"></i>
+                                <input type="text" name="ubicacion" th:value="${club.ubicacion}" class="input input-bordered pl-12 w-full rounded-xl" required />
+                            </div>
+                        </div>
+
+                        <!-- Horario -->
+                        <div class="form-control">
+                            <label class="label"><span class="label-text font-bold text-slate-600">Horario de Actividades</span></label>
+                            <div class="relative">
+                                <i class="ph-fill ph-clock absolute left-4 top-4 text-escom-main"></i>
+                                <input type="text" name="horario" th:value="${club.horario}" class="input input-bordered pl-12 w-full rounded-xl" required />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actualizar Cronograma -->
+                    <div class="p-6 bg-slate-50 rounded-2xl border border-dashed border-slate-300">
+                        <label class="flex items-center gap-2 mb-2 font-bold text-slate-600">
+                            <i class="ph-bold ph-file-pdf text-xl text-red-500"></i>
+                            Cronograma de Actividades (PDF)
+                        </label>
+                        <input type="file" name="archivoCronograma" accept=".pdf" class="file-input file-input-ghost w-full bg-white border-slate-200" />
+                        <p class="text-xs text-escom-accent mt-2 flex items-center gap-1">
+                            <i class="ph-bold ph-info"></i> Reemplaza el archivo actual subiendo uno nuevo.
+                        </p>
+                    </div>
+
+                    <!-- Guardar Cambios -->
+                    <div class="pt-4">
+                        <button type="submit" class="btn btn-block bg-escom-deep border-none text-white hover:bg-slate-900 shadow-xl rounded-xl gap-2">
+                            <i class="ph-bold ph-floppy-disk text-xl"></i>
+                            Guardar Todos los Cambios
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alumno Inicio | Conecta ESCOM</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.7.3/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        escom: {
+                            main: '#0EA5E9',
+                            dark: '#0284C7',
+                            deep: '#0F172A',
+                            soft: '#F0F9FF',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 20px 40px -15px rgba(14, 165, 233, 0.1)',
+                    },
+                    borderRadius: {
+                        'super': '2rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .card-hover-effect {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-hover-effect:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px -12px rgba(14, 165, 233, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col relative selection:bg-escom-main selection:text-white">
+
+    <!-- Navbar -->
+    <nav class="fixed top-4 left-0 right-0 z-50 flex justify-center px-4">
+        <div class="navbar w-full max-w-6xl rounded-full glass-panel shadow-soft border border-white/40 pl-6 pr-2">
+            <div class="navbar-start gap-3">
+                <a class="text-xl font-bold tracking-tight text-slate-800 flex items-center gap-2" href="#">
+                    <div class="w-8 h-8 bg-escom-main rounded-lg flex items-center justify-center text-white text-xs font-bold shadow-md shadow-blue-200">
+                        <i class="ph-bold ph-plugs-connected text-lg"></i>
+                    </div>
+                    Conecta<span class="text-escom-main">ESCOM</span>
+                    <span class="badge bg-slate-100 text-slate-500 text-xs font-bold border-none hidden sm:flex">Alumno</span>
+                </a>
+            </div>
+
+            <div class="navbar-end">
+                <div class="dropdown dropdown-end">
+                    <!-- Avatar -->
+                    <label tabindex="0" class="btn btn-ghost btn-circle avatar ring-2 ring-offset-2 ring-transparent hover:ring-escom-main transition-all">
+                        <div class="w-9 rounded-full">
+                            <!-- Mostrar foto de perfil del Alumno si está asignada -->
+                            <img th:if="${alumno.rutaFotoPerfil != null and alumno.rutaFotoPerfil != ''}"
+                                th:src="@{ '/' + ${alumno.rutaFotoPerfil} }"/>
+
+                            <!-- Si no tiene una foto de perfil, mostramos un avatar generado -->
+                            <img th:unless="${alumno.rutaFotoPerfil != null and alumno.rutaFotoPerfil != ''}"
+                                th:src="'https://ui-avatars.com/api/?name=' + ${alumno.nombre} + '&background=random'"/>
+                        </div>
+                    </label>
+                    <ul tabindex="0" class="mt-4 z-[1] p-2 shadow-soft menu menu-sm dropdown-content bg-white rounded-[1.5rem] w-60 border border-slate-100">
+                        <li class="px-4 py-3 border-b border-slate-50">
+                            <p class="font-bold text-escom-deep text-base" th:text="${alumno.nombre}"></p>
+                            <p class="text-xs text-slate-400">Alumno</p>
+                        </li>
+                        <li><a th:href="@{/alumno/editar-perfil}" class="rounded-xl py-3 mt-1 hover:text-escom-main"><i class="ph ph-user"></i> Mi Perfil</a></li>
+                        <li><a th:href="@{/logout}" class="rounded-xl py-3 text-red-500 hover:bg-red-50 hover:text-red-600 mt-1"><i class="ph ph-sign-out"></i> Cerrar Sesión</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow max-w-7xl mx-auto pt-32 pb-20 px-4 sm:px-6 w-full">
+
+        <!-- Welcome Header -->
+        <header class="mb-10 flex items-center gap-6">
+            <!-- Nombre del Alumno -->
+            <div class="flex items-center gap-4">
+                <h1 class="text-4xl md:text-5xl font-black text-escom-deep tracking-tight">
+                    Alumno: <span class="text-escom-main" th:text="${alumno.nombre}"></span>
+                </h1>
+            </div>
+
+            <!-- Sección Cantidad Clubes Inscritos-->
+            <section class="flex items-center gap-4 bg-white p-6 rounded-[2rem] border border-slate-100 shadow-soft hover:shadow-md transition-shadow">
+                <div class="w-14 h-14 bg-blue-50 text-escom-main rounded-2xl flex items-center justify-center text-2xl">
+                    <i class="ph-duotone ph-briefcase"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-bold text-slate-400 uppercase tracking-wide">Cantidad de Clubes</p>
+                    <p class="text-3xl font-black text-slate-800" th:text="${cantidadClubes}"></p>
+                </div>
+            </section>
+        </header>
+
+        <!-- Mensaje de éxito -->
+        <div th:if="${success != null}" class="alert alert-success p-4 mb-6 bg-green-100 text-green-800 rounded-xl border border-green-300 shadow-lg transform transition-all">
+            <p th:text="${success}"></p>
+        </div>
+
+        <!-- Mensaje de error -->
+        <div th:if="${error != null}" class="alert alert-error p-4 mb-6 bg-red-100 text-red-800 rounded-xl border border-red-300 shadow-lg transform transition-all">
+            <p th:text="${error}"></p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+            <!-- COLUMNA PRINCIPAL -->
+            <div class="lg:col-span-8 space-y-10">
+
+                <!-- SECCIÓN 1: CLUBES INSCRITOS -->
+                <section>
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-bold text-escom-deep flex items-center gap-2">
+                            <i class="ph-duotone ph-briefcase text-escom-main text-2xl"></i>
+                            Clubes Inscritos
+                        </h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Iteración sobre los clubes del alumno -->
+                        <div th:each="club : ${clubes}">
+                            <div class="card bg-white border border-slate-100 shadow-soft rounded-[2.5rem] overflow-hidden group card-hover-effect h-full flex flex-col">
+                                <figure class="h-40 relative shrink-0">
+                                    <img th:src="@{ '/' + ${club.rutaArchivoImagen} }" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent"></div>
+                                </figure>
+
+                                <div class="p-6 relative pt-12 flex flex-col flex-grow">
+
+                                    <div th:if="${club.tipo == 'Académico'}" class="absolute -top-8 left-6 w-16 h-16 bg-white rounded-2xl shadow-lg flex items-center justify-center text-blue-600 border border-slate-50 transform group-hover:-translate-y-1 transition-transform">
+                                        <i class="ph-duotone ph-circuitry text-3xl"></i>
+                                    </div>
+                                    
+                                    <div th:if="${club.tipo == 'Cultural'}" class="absolute -top-8 left-6 w-16 h-16 bg-white rounded-2xl shadow-lg flex items-center justify-center text-purple-600 border border-slate-50 transform group-hover:-translate-y-1 transition-transform">
+                                        <i class="ph-duotone ph-paint-brush-broad text-3xl"></i>
+                                    </div>
+                                    
+                                    <div th:if="${club.tipo == 'Deportivo'}" class="absolute -top-8 left-6 w-16 h-16 bg-white rounded-2xl shadow-lg flex items-center justify-center text-orange-600 border border-slate-50 transform group-hover:-translate-y-1 transition-transform">
+                                        <i class="ph-duotone ph-trophy text-3xl"></i>
+                                    </div>
+
+                                    <h3 class="text-xl font-black text-slate-800 mb-1 group-hover:text-escom-main transition-colors" th:text="${club.nombre}"></h3>
+                                    <p th:text="${club.objetivo}" class="text-slate-500 text-sm mb-6 line-clamp-2 leading-relaxed"></p>
+
+                                    <!-- Botón principal -->
+                                    <a th:href="@{/alumno/ver-club/{id}(id=${club.id})}" 
+                                        class="btn btn-block bg-escom-deep hover:bg-escom-main text-white border-none rounded-xl shadow-lg shadow-slate-900/10 h-12 min-h-[3rem]">
+                                        VER DETALLES
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECCIÓN 2: TODOS LOS CLUBES DISPONIBLES -->
+                <section class="mt-12">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-bold text-escom-deep flex items-center gap-2">
+                            <i class="ph-duotone ph-grid-four text-escom-main text-2xl"></i>
+                            Todos los Clubes Disponibles
+                        </h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Iteración sobre todos los clubes -->
+                        <div th:each="club : ${todosLosClubes}">
+                            <div class="card bg-white border border-slate-100 shadow-soft rounded-[2.5rem] overflow-hidden group card-hover-effect h-full flex flex-col">
+                                <figure class="h-40 relative shrink-0">
+                                    <img th:src="@{ '/' + ${club.rutaArchivoImagen} }" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent"></div>
+                                </figure>
+
+                                <div class="p-6 relative pt-12 flex flex-col flex-grow">
+
+                                    <div th:if="${club.tipo == 'Académico'}" class="absolute -top-8 left-6 w-16 h-16 bg-white rounded-2xl shadow-lg flex items-center justify-center text-blue-600 border border-slate-50 transform group-hover:-translate-y-1 transition-transform">
+                                        <i class="ph-duotone ph-circuitry text-3xl"></i>
+                                    </div>
+                            
+                                    <div th:if="${club.tipo == 'Cultural'}" class="absolute -top-8 left-6 w-16 h-16 bg-white rounded-2xl shadow-lg flex items-center justify-center text-purple-600 border border-slate-50 transform group-hover:-translate-y-1 transition-transform">
+                                        <i class="ph-duotone ph-paint-brush-broad text-3xl"></i>
+                                    </div>
+                            
+                                    <div th:if="${club.tipo == 'Deportivo'}" class="absolute -top-8 left-6 w-16 h-16 bg-white rounded-2xl shadow-lg flex items-center justify-center text-orange-600 border border-slate-50 transform group-hover:-translate-y-1 transition-transform">
+                                        <i class="ph-duotone ph-trophy text-3xl"></i>
+                                    </div>
+
+                                    <h3 class="text-xl font-black text-slate-800 mb-1 group-hover:text-escom-main transition-colors" th:text="${club.nombre}"></h3>
+                                    <p th:text="${club.objetivo}" class="text-slate-500 text-sm mb-6 line-clamp-2 leading-relaxed"></p>
+
+                                    <!-- Si el alumno no está inscrito, mostrar el botón -->
+                                    <div th:if="${not alumno.clubesInscritos.contains(club)}">
+                                        <form th:action="@{/alumno/inscribir-club/{id}(id=${club.id})}" method="post">
+                                            <button type="submit" class="btn btn-block bg-escom-deep hover:bg-escom-main text-white border-none rounded-xl shadow-lg shadow-slate-900/10 h-12 min-h-[3rem]">
+                                                INSCRIBIR
+                                            </button>
+                                        </form>
+                                     </div>
+
+                                     <!-- Si el alumno ya está inscrito, mostrar el botón deshabilitado -->
+                                    <div th:if="${alumno.clubesInscritos.contains(club)}">
+                                        <button class="btn btn-block bg-red-600 hover:bg-red-700 text-white border-none rounded-xl shadow-lg shadow-red-900/10 h-12 min-h-[3rem] opacity-80 cursor-not-allowed pointer-events-none">
+                                            YA ESTÁS INSCRITO
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- COLUMNA LATERAL -->
+            <div class="lg:col-span-4 space-y-8">
+                
+                <!-- Perfil Resumen -->
+                <div class="card bg-gradient-to-br from-escom-deep to-slate-900 text-white rounded-[2.5rem] p-8 shadow-xl shadow-slate-900/20 relative overflow-hidden border-4 border-gray-300/50">
+                    <div class="absolute top-0 right-0 w-40 h-40 bg-escom-main rounded-full blur-[80px] opacity-20 -mr-10 -mt-10"></div>
+                    <div class="relative z-10 flex flex-col items-center text-center">
+                       <div class="avatar mb-4">
+                            <div class="w-24 rounded-full border-4 border-white/10 shadow-2xl">
+                                <!-- Mostrar foto de perfil del Alumno si está asignada -->
+                                <img th:if="${alumno.rutaFotoPerfil != null and alumno.rutaFotoPerfil != ''}"
+                                    th:src="@{ '/' + ${alumno.rutaFotoPerfil} }"/>
+
+                                <!-- Si no tiene una foto de perfil, mostramos un avatar generado -->
+                                <img th:unless="${alumno.rutaFotoPerfil != null and alumno.rutaFotoPerfil != ''}"
+                                    th:src="'https://ui-avatars.com/api/?name=' + ${alumno.nombre} + '&background=random'"/>
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-bold" th:text="${alumno.nombre}"></h3>
+                                                
+                        <div class="w-full bg-white/10 rounded-xl p-3 mb-6 backdrop-blur-sm">
+                            <p class="text-xs text-slate-300 uppercase font-bold tracking-wider mb-1">Correo Institucional</p>
+                            <p class="text-sm font-medium" th:text="${alumno.correo}"></p>
+                        </div>
+
+                        <a th:href="@{/alumno/editar-perfil}">
+                            <button class="btn btn-outline border-white/20 text-white hover:bg-white hover:text-escom-deep hover:border-white w-full rounded-xl gap-2">
+                                <i class="ph-bold ph-pencil-simple"></i> Editar Datos
+                            </button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

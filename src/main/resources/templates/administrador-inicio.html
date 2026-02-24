@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración General | Conecta ESCOM</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.7.3/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        escom: {
+                            main: '#0EA5E9',
+                            dark: '#0284C7',
+                            deep: '#0F172A',
+                            soft: '#F0F9FF',
+                            admin: '#4F46E5', 
+                            adminSoft: '#EEF2FF'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 20px 40px -15px rgba(79, 70, 229, 0.1)',
+                    },
+                    borderRadius: {
+                        'super': '2rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Ocultar scrollbar */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col relative selection:bg-escom-admin selection:text-white">
+
+    <!-- Navbar Admin -->
+    <nav class="fixed top-4 left-0 right-0 z-50 flex justify-center px-4">
+        <div class="navbar w-full max-w-6xl rounded-full bg-white/90 backdrop-blur-md shadow-lg border border-white/40 pl-6 pr-2">
+            
+            <div class="navbar-start gap-3">
+                <!-- Botón Menú Móvil -->
+                <div class="dropdown lg:hidden">
+                    <label tabindex="0" class="btn btn-ghost btn-circle text-indigo-600">
+                        <i class="ph-bold ph-list text-2xl"></i>
+                    </label>
+                    <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow-xl bg-white rounded-2xl w-52 border border-slate-100">
+                        <li><a onclick="switchView('dashboard')">Inicio</a></li>
+                        <li><a onclick="switchView('clubes')">Clubes</a></li>
+                        <li><a onclick="switchView('coordinadores')">Coordinadores</a></li>
+                        <li><a onclick="switchView('alumnos')">Alumnos</a></li>
+                        <div class="divider my-1"></div>
+                        <li><a onclick="document.getElementById('modal_crear_club').showModal()" class="text-indigo-600 font-bold">Crear Club</a></li>
+                    </ul>
+                </div>
+
+                <div class="w-10 h-10 bg-escom-admin rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-200 hidden sm:flex">
+                    <i class="ph-bold ph-buildings text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-xl tracking-tight text-slate-800 leading-none">Administrador</h1>
+                    <span class="text-xs text-slate-400 font-medium tracking-wide">SUBDIRECCIÓN ACADÉMICA</span>
+                </div>
+            </div>
+
+            <div class="navbar-end flex gap-4">
+                <div class="hidden md:flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
+                    <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                    <span class="text-xs font-bold text-slate-600">Administrador</span>
+                </div>
+                <div class="dropdown dropdown-end">
+                    <label tabindex="0" class="btn btn-ghost btn-circle avatar ring-2 ring-transparent hover:ring-indigo-500 transition-all">
+                        <div class="w-10 rounded-full">
+                            <img src="https://ui-avatars.com/api/?name=Admin+General&background=4F46E5&color=fff" />
+                        </div>
+                    </label>
+                    <ul tabindex="0" class="mt-3 z-[1] p-2 shadow-xl menu menu-sm dropdown-content bg-white rounded-2xl w-52 border border-slate-100">
+                        <li class="menu-title px-4 py-2 text-xs text-slate-400 font-bold uppercase">Sesión</li>
+                        <li><a href="/logout" class="text-red-500 hover:bg-red-50 rounded-xl"><i class="ph-bold ph-sign-out"></i> Cerrar Sesión</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex pt-28 h-screen overflow-hidden max-w-7xl mx-auto px-4 gap-6 w-full">   
+        <!-- Sidebar Lateral -->
+        <aside class="w-64 bg-white border border-slate-100 hidden lg:flex flex-col justify-between p-6 rounded-[2rem] shadow-sm mb-6 h-[calc(100vh-8rem)] sticky top-28">
+            <div class="space-y-2">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 px-3">Gestión</p>
+                <button onclick="switchView('dashboard')" id="nav-dashboard" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold bg-escom-adminSoft text-indigo-700 transition-colors shadow-sm">
+                    <i class="ph-duotone ph-squares-four text-xl"></i> Dashboard
+                </button>
+                <button onclick="switchView('clubes')" id="nav-clubes" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-500 hover:bg-slate-50 transition-colors">
+                    <i class="ph-duotone ph-users-three text-xl"></i> Clubes
+                </button>
+                <button onclick="switchView('coordinadores')" id="nav-coordinadores" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-500 hover:bg-slate-50 transition-colors">
+                    <i class="ph-duotone ph-chalkboard text-xl"></i> Coordinadores
+                </button>
+                <button onclick="switchView('alumnos')" id="nav-alumnos" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-500 hover:bg-slate-50 transition-colors">
+                    <i class="ph-duotone ph-graduation-cap text-xl"></i> Alumnos
+                </button>
+           </div>
+            
+            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <button onclick="document.getElementById('modal_crear_club').showModal()" class="btn btn-sm bg-indigo-600 text-white border-none w-full rounded-xl gap-2 hover:bg-indigo-700 shadow-md shadow-indigo-200 mb-2">
+                    <i class="ph-bold ph-plus"></i> Club
+                </button>
+                <button onclick="document.getElementById('modal_registrar_coordinador').showModal()" class="btn btn-sm bg-indigo-600 text-white border-none w-full rounded-xl gap-2 hover:bg-indigo-700 shadow-md shadow-indigo-200">
+                    <i class="ph-bold ph-plus"></i> Coordinador 
+                </button>
+            </div>
+        </aside>
+ 
+        <!-- Main Area -->
+        <main class="flex-1 overflow-y-auto pb-10 hide-scrollbar">
+            
+            <!-- VISTA 1: DASHBOARD -->
+            <div id="view-dashboard" class="animate-fade-in space-y-8">
+                <header>
+                    <h2 class="text-3xl font-black text-slate-800">Resumen General</h2>
+                    <p class="text-slate-500">Estado actual de la comunidad extracurricular.</p>
+                </header>
+
+                <!-- Mensaje de éxito -->
+                <div th:if="${success != null}" class="alert alert-success p-4 mb-6 bg-green-100 text-green-800 rounded-xl border border-green-300 shadow-lg transform transition-all">
+                    <p th:text="${success}"></p>
+                </div>
+
+                <!-- Mensaje de error -->
+                <div th:if="${error != null}" class="alert alert-error p-4 mb-6 bg-red-100 text-red-800 rounded-xl border border-red-300 shadow-lg transform transition-all">
+                    <p th:text="${error}"></p>
+                </div>
+
+                <!-- Mensaje de advertencia -->
+                <div th:if="${warning != null}" class="alert alert-warning p-4 mb-6 bg-yellow-100 text-yellow-800 rounded-xl border border-yellow-300 shadow-lg transform transition-all">
+                    <p th:text="${warning}"></p>
+                </div>
+
+                <!-- KPIs -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 flex items-center justify-between group hover:border-indigo-200 transition-colors">
+                        <div>
+                            <p class="text-sm font-bold text-slate-400 uppercase tracking-wide">Clubes Activos</p>
+                            <p class="text-4xl font-black text-slate-800 mt-1" th:text="${totalClubes}"></p>
+                        </div>
+                        <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+                            <i class="ph-duotone ph-users-three"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 flex items-center justify-between group hover:border-blue-200 transition-colors">
+                        <div>
+                            <p class="text-sm font-bold text-slate-400 uppercase tracking-wide">Alumnos Inscritos</p>
+                            <p class="text-4xl font-black text-slate-800 mt-1" th:text="${totalAlumnos}"></p>
+                        </div>
+                        <div class="w-16 h-16 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+                            <i class="ph-duotone ph-student"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 flex items-center justify-between group hover:border-purple-200 transition-colors">
+                        <div>
+                            <p class="text-sm font-bold text-slate-400 uppercase tracking-wide">Coordinadores</p>
+                            <p class="text-4xl font-black text-slate-800 mt-1" th:text="${totalCoordinadores}"></p>
+                        </div>
+                        <div class="w-16 h-16 bg-purple-50 text-purple-500 rounded-2xl flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+                            <i class="ph-duotone ph-chalkboard-teacher"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISTA 2: GESTIÓN DE CLUBES -->
+            <div id="view-clubes" class="hidden animate-fade-in space-y-8">
+                <header class="flex flex-col md:flex-row justify-between items-end gap-4">
+                    <div>
+                        <h2 class="text-3xl font-black text-slate-800">Gestión de Clubes</h2>
+                        <p class="text-slate-500">Administra el catálogo oficial de actividades extracurriculares.</p>
+                    </div>
+                    <button onclick="document.getElementById('modal_crear_club').showModal()" class="btn bg-indigo-600 hover:bg-indigo-700 text-white border-none rounded-xl gap-2 shadow-lg shadow-indigo-200 px-6">
+                        <i class="ph-bold ph-plus"></i> Nuevo Club
+                    </button>
+                </header>
+
+                <div class="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden">
+
+                    <!-- Tabla de clubes -->
+                    <div class="overflow-x-auto">
+                        <table class="table w-full">
+                            <thead class="bg-slate-50 text-slate-500 text-xs font-bold uppercase">
+                                <tr>
+                                    <th class="pl-6">Club</th>
+                                    <th>Coordinador</th>
+                                    <th>Tipo</th>
+                                    <th>Alumnos</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <!-- Generar dinámicamente las filas de la tabla con la lista de clubes -->
+                                <tr th:each="club : ${clubes}" class="hover:bg-indigo-50/30 group border-b border-slate-50">
+
+                                    <!-- Información General -->
+                                    <td class="pl-6 py-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="avatar">
+                                                <div class="w-10 rounded-lg flex items-center justify-center font-bold">
+                                                    <div th:if="${club.tipo == 'Académico'}"
+                                                        class="w-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-bold">
+                                                        <span th:text="${club.inicialesClub}"></span>
+                                                    </div>
+
+                                                    <div th:if="${club.tipo == 'Deportivo'}"
+                                                        class="w-10 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center font-bold">
+                                                        <span th:text="${club.inicialesClub}"></span>
+                                                    </div>
+
+                                                    <div th:if="${club.tipo == 'Cultural'}"
+                                                        class="w-10 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center font-bold">
+                                                        <span th:text="${club.inicialesClub}"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div class="font-bold text-slate-800" th:text="${club.nombre}"></div>
+                                                <div class="text-xs text-slate-400" th:text="${club.ubicacion}"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <!-- Coordinador del Club -->
+                                    <td>
+                                        <div class="text-sm font-medium text-slate-700" 
+                                            th:text="${club.coordinadorClub?.nombre}">
+                                        </div>
+                                    </td>
+
+                                    <!-- Tipo de Club -->
+                                     <td>
+                                        <span th:if="${club.tipo == 'Académico'}"
+                                            class="badge bg-blue-50 text-blue-600 border-none"
+                                            th:text="${club.tipo}">
+                                        </span>
+
+                                        <span th:if="${club.tipo == 'Deportivo'}"
+                                            class="badge bg-orange-50 text-orange-600 border-none"
+                                            th:text="${club.tipo}">
+                                        </span>
+
+                                        <span th:if="${club.tipo == 'Cultural'}"
+                                            class="badge bg-purple-50 text-purple-600 border-none"
+                                            th:text="${club.tipo}">
+                                        </span>
+                                    </td>
+
+                                    <!-- Cantidad de Alumnos Inscritos -->
+                                    <td>
+                                        <div class="badge bg-green-100 text-green-700 border-none font-bold" 
+                                            th:text="${club.cantidadAlumnosInscritos} + ' Inscritos'">
+                                        </div>
+                                    </td>
+
+                                    <!-- Acciones -->
+                                    <td>
+                                        <div class="flex gap-1">
+                                            <a th:href="@{/administrador/editar-club/{id}(id=${club.id})}" 
+                                                class="btn btn-square btn-sm btn-ghost text-slate-400 hover:text-indigo-600 tooltip" 
+                                                data-tip="Editar">
+                                                <i class="ph-bold ph-pencil-simple"></i>
+                                            </a>
+                                            <form method="post" th:action="@{/administrador/eliminar-club}" th:object="${club}">
+                                                <input type="hidden" name="id" th:value="${club.id}">
+                                                <button type="submit" 
+                                                    class="btn btn-square btn-sm btn-ghost text-slate-400 hover:text-red-500 tooltip" 
+                                                    data-tip="Eliminar">
+                                                    <i class="ph-bold ph-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISTA 3: DIRECTORIO DE COORDINADORES -->
+            <div id="view-coordinadores" class="hidden animate-fade-in space-y-8">
+                <header>
+                    <h2 class="text-3xl font-black text-slate-800">Directorio de Coordinadores</h2>
+                    <p class="text-slate-500">Consulta y gestiona a los coordinadores de los clubes.</p>
+                </header>
+
+                <div class="card bg-white border border-slate-100 shadow-sm rounded-[2rem] p-6">
+
+                    <!-- Filtro de búsqueda -->
+                    <div class="flex gap-4 mb-6">
+                        <div class="relative flex-1">
+                            <i class="ph-bold ph-magnifying-glass absolute left-3 top-3.5 text-slate-400"></i>
+                            <input type="text" placeholder="Buscar por nombre de usuario..." class="input input-bordered w-full rounded-xl pl-10 bg-slate-50 focus:bg-white" />
+                        </div>
+                    </div>
+
+                    <!-- Tabla de coordinadores -->
+                    <div class="overflow-x-auto">
+                        <table class="table w-full">
+                            <thead>
+                                <tr class="text-slate-400 border-b border-slate-100">
+                                    <th>Nombre</th>
+                                    <th>Usuario</th>
+                                    <th>Correo</th>
+                                    <th>Teléfono</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Generar dinámicamente las filas de la tabla con la lista de coordinadores -->
+                                <tr th:each="coordinador : ${coordinadores}" class="user-row hover:bg-slate-50 border-b border-slate-50">
+                                    <td>
+                                        <div class="flex items-center gap-3">
+                                            <div class="avatar">
+                                                <div class="w-8 rounded-full bg-indigo-100">
+                                                    <!-- Mostrar foto de perfil del Coordinador si está asignada -->
+                                                    <img th:if="${coordinador.rutaFotoPerfil != null and coordinador.rutaFotoPerfil != ''}"
+                                                        th:src="@{ '/' + ${coordinador.rutaFotoPerfil} }"/>
+
+                                                    <!-- Si no tiene una foto de perfil, mostramos un avatar generado -->
+                                                    <img th:unless="${coordinador.rutaFotoPerfil != null and coordinador.rutaFotoPerfil != ''}"
+                                                        th:src="'https://ui-avatars.com/api/?name=' + ${coordinador.nombre} + '&background=random'"/>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div class="font-bold text-sm text-slate-700" th:text="${coordinador.nombre}"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <!-- Usuario -->
+                                    <td class="font-semibold text-xs p-2">
+                                        <div class="flex items-center gap-2">
+                                            <i class="ph-bold ph-user text-blue-500"></i>
+                                            <span th:text="${coordinador.usuario}"></span>
+                                        </div>
+                                    </td>
+
+                                    <!-- Correo -->
+                                    <td class="font-semibold text-xs p-2">
+                                        <div class="flex items-center gap-2">
+                                            <i class="ph-light ph-envelope text-blue-600"></i>
+                                            <span th:text="${coordinador.correo}"></span>
+                                        </div>
+                                    </td>
+
+                                    <!-- Teléfono -->
+                                    <td class="font-semibold text-xs p-2">
+                                        <div class="flex items-center gap-2">
+                                            <i class="ph-light ph-phone text-blue-600"></i>
+                                            <span th:text="${coordinador.telefono}"></span>
+                                        </div>
+                                    </td>
+
+                                    <!-- Acciones -->
+                                    <td>
+                                        <div class="flex gap-1">
+                                            <a th:href="@{/administrador/editar-coordinador/{id}(id=${coordinador.id})}" 
+                                                class="btn btn-square btn-sm btn-ghost text-slate-400 hover:text-indigo-600 tooltip" 
+                                                data-tip="Editar">
+                                                <i class="ph-bold ph-pencil-simple"></i>
+                                            </a>
+                                            <form method="post" th:action="@{/administrador/eliminar-coordinador}" th:object="${coordinador}">
+                                                <input type="hidden" name="id" th:value="${coordinador.id}">
+                                                <button type="submit" class="btn btn-square btn-sm btn-ghost text-slate-400 hover:text-red-500 tooltip" data-tip="Eliminar">
+                                                    <i class="ph-bold ph-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISTA 4: DIRECTORIO DE ALUMNOS -->
+            <div id="view-alumnos" class="hidden animate-fade-in space-y-8">
+                <header>
+                    <h2 class="text-3xl font-black text-slate-800">Directorio de Alumnos</h2>
+                    <p class="text-slate-500">Consulta y gestiona a los alumnos registrados en los clubes.</p>
+                </header>
+
+                <div class="card bg-white border border-slate-100 shadow-sm rounded-[2rem] p-6">
+
+                    <!-- Filtro de búsqueda -->
+                    <div class="flex gap-4 mb-6">
+                        <div class="relative flex-1">
+                            <i class="ph-bold ph-magnifying-glass absolute left-3 top-3.5 text-slate-400"></i>
+                            <input type="text" placeholder="Buscar por número de boleta..." class="input input-bordered w-full rounded-xl pl-10 bg-slate-50 focus:bg-white" />
+                        </div>
+                    </div>
+
+                    <!-- Tabla de alumnos -->
+                    <div class="overflow-x-auto">
+                        <table class="table w-full">
+                            <thead>
+                                <tr class="text-slate-400 border-b border-slate-100">
+                                    <th>Nombre</th>
+                                    <th>Boleta</th>
+                                    <th>Documentos</th> 
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Generar dinámicamente las filas de la tabla con la lista de alumnos -->
+                                <tr th:each="alumno : ${alumnos}" class="user-row hover:bg-slate-50 border-b border-slate-50">
+                                    <td>
+                                        <div class="flex items-center gap-3">
+                                            <div class="avatar">
+                                                <div class="w-8 rounded-full bg-slate-200">
+                                                    <!-- Mostrar foto de perfil del Alumno si está asignada -->
+                                                    <img th:if="${alumno.rutaFotoPerfil != null and alumno.rutaFotoPerfil != ''}"
+                                                        th:src="@{ '/' + ${alumno.rutaFotoPerfil} }"/>
+
+                                                    <!-- Si no tiene una foto de perfil, mostramos un avatar generado -->
+                                                    <img th:unless="${alumno.rutaFotoPerfil != null and alumno.rutaFotoPerfil != ''}"
+                                                        th:src="'https://ui-avatars.com/api/?name=' + ${alumno.nombre} + '&background=random'"/>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div class="font-bold text-sm text-slate-700" th:text="${alumno.nombre}"></div>
+                                                <div class="text-xs text-slate-400" th:text="${alumno.carrera}"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <!-- Boleta -->
+                                    <td class="font-semibold text-xs p-2">
+                                        <div class="flex items-center gap-2">
+                                            <i class="ph-bold ph-user text-blue-500"></i>
+                                            <span th:text="${alumno.boleta}"></span>
+                                        </div>
+                                    </td>
+
+                                    <!-- Documentos -->
+                                    <td class="text-xs text-slate-500">
+                                        <div class="flex gap-2">
+                                            <a th:if="${alumno.rutaArchivoCredencial != null}"
+                                                th:href="@{ '/' + ${alumno.rutaArchivoCredencial} }" 
+                                                class="btn btn-xs btn-outline border-slate-300 text-slate-500 gap-1 hover:border-pink-500 hover:text-pink-500" 
+                                                target="_blank" 
+                                                title="Ver INE">
+                                                <i class="ph-bold ph-identification-card"></i> INE
+                                            </a>
+                                            <a th:if="${alumno.rutaArchivoImss != null}" 
+                                                th:href="@{ '/' + ${alumno.rutaArchivoImss} }" 
+                                                class="btn btn-xs btn-outline border-slate-300 text-slate-500 gap-1 hover:border-green-500 hover:text-green-500" 
+                                                target="_blank" 
+                                                title="Ver IMSS">
+                                                <i class="ph-bold ph-file-pdf"></i> IMSS
+                                            </a>
+                                        </div>
+                                    </td>
+
+                                    <!-- Acción -->
+                                    <td>
+                                        <form method="post" th:action="@{/administrador/eliminar-alumno}" th:object="${alumno}">
+                                            <input type="hidden" name="id" th:value="${alumno.id}">
+                                            <button type="submit" class="btn btn-square btn-sm btn-ghost text-slate-400 hover:text-red-500 tooltip" data-tip="Eliminar">
+                                                <i class="ph-bold ph-trash"></i>
+                                            </button>
+                                        </form>                                        
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL 1: CREAR CLUB -->
+    <dialog id="modal_crear_club" class="modal modal-bottom sm:modal-middle">
+        <div class="modal-box w-11/12 max-w-5xl bg-white rounded-[2rem] p-0 overflow-hidden shadow-2xl">
+            
+            <!-- Header Modal -->
+            <div class="bg-indigo-600 p-6 text-white flex justify-between items-center sticky top-0 z-20">
+                <div>
+                    <h3 class="font-bold text-xl flex items-center gap-2"><i class="ph-bold ph-plus-circle"></i> Registrar Nuevo Club</h3>
+                </div>
+                <form method="dialog"><button class="btn btn-circle btn-sm btn-ghost text-white hover:bg-white/20"><i class="ph-bold ph-x"></i></button></form>
+            </div>
+
+            <!-- Main Modal -->
+            <div class="p-8 pb-32 max-h-[70vh] overflow-y-auto space-y-8">
+                <form th:action="@{/administrador/registrar-club}" method="post" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+                    <!-- Columna Izquierda: Información General y Logística -->
+                    <div class="space-y-6">
+
+                        <!-- Sección 1: Información General -->
+                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                            <h4 class="text-sm font-bold text-indigo-600 uppercase tracking-wide mb-4 flex items-center gap-2">
+                                <i class="ph-duotone ph-info"></i> 1. Información General
+                            </h4>
+                            
+                            <!-- Nombre del Club -->
+                            <div class="form-control mb-4">
+                                <label class="label"><span class="label-text font-bold text-slate-600">Nombre del Club</span></label>
+                                <input type="text" name="nombre" placeholder="Ej. Club de Ajedrez" class="input input-bordered rounded-xl bg-white" />
+                            </div>
+                            
+                            <!-- Tipo de Club -->
+                            <div class="form-control mb-4">
+                                <label class="label"><span class="label-text font-bold text-slate-600">Tipo de Club</span></label>
+                                <select name="tipo" class="select select-bordered rounded-xl bg-white w-full">
+                                    <option disabled selected>Seleccione tipo...</option>
+                                    <option>Académico</option>
+                                    <option>Cultural</option>
+                                    <option>Deportivo</option>
+                                </select>
+                            </div>
+
+                            <!-- Objetivo -->
+                            <div class="form-control mb-4">
+                                <label class="label"><span class="label-text font-bold text-slate-600">Objetivo</span></label>
+                                <textarea name="objetivo" class="textarea textarea-bordered rounded-xl bg-white h-24 text-sm" placeholder="Propósito principal..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Sección 2: Logística -->
+                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                            <h4 class="text-sm font-bold text-indigo-600 uppercase tracking-wide mb-4 flex items-center gap-2">
+                                <i class="ph-duotone ph-map-pin"></i> 2. Logística
+                            </h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <!-- Ubicación -->
+                                <div class="form-control">
+                                    <label class="label"><span class="label-text font-bold text-slate-600 text-xs">Ubicación</span></label>
+                                    <input type="text" name="ubicacion" placeholder="Ej. Lab 3" class="input input-bordered input-sm rounded-lg bg-white" />
+                                </div>
+
+                                <!-- Horario -->
+                                <div class="form-control">
+                                    <label class="label"><span class="label-text font-bold text-slate-600 text-xs">Horario</span></label>
+                                    <input type="text" name="horario" placeholder="Ej. Lun-Vie 15h" class="input input-bordered input-sm rounded-lg bg-white" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Staff, Cronograma y Botón para Registrar Club -->
+                    <div class="space-y-6">
+
+                        <!-- Sección 3: Staff Directivo-->
+                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                            <h4 class="text-sm font-bold text-indigo-600 uppercase tracking-wide mb-4 flex items-center gap-2">
+                                <i class="ph-duotone ph-users"></i> 3. Staff Directivo
+                            </h4>
+
+                            <!-- Coordinador del Club -->
+                            <div class="form-control mb-4">
+                                <label class="label">
+                                    <span class="label-text font-bold text-slate-600">Coordinador</span>
+                                </label>
+                                <input type="text" name="usuarioCoordinador" placeholder="Escribe el nombre de usuario del coordinador" class="input input-bordered rounded-xl bg-white w-full" />
+                            </div>
+
+                            <!-- Alumno Presidente -->
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-bold text-slate-600">Alumno Presidente</span>
+                                </label>
+                                <input type="text" name="boletaPresidente" placeholder="Escribe el número de boleta del alumno" class="input input-bordered rounded-xl bg-white w-full" />
+                            </div>
+                        </div>
+
+                        <!-- Sección 4 - Cronograma -->
+                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                            <h4 class="text-sm font-bold text-indigo-600 uppercase tracking-wide mb-4 flex items-center gap-2">
+                                <i class="ph-duotone ph-calendar"></i> 4. Cronograma
+                            </h4>
+
+                            <div class="form-control mt-4">
+                                <label class="label"><span class="label-text font-bold text-slate-600 text-xs">Cronograma (PDF)</span></label>
+                                <input type="file" name="archivoCronograma" class="file-input file-input-bordered file-input-sm w-full rounded-lg bg-white" accept=".pdf" />
+                            </div>
+                        </div>
+
+                        <!-- Botón para registrar Club -->
+                        <div class="lg:col-span-2 flex justify-center gap-3 pt-6">
+                            <button type="submit"
+                                class="btn bg-indigo-600 hover:bg-indigo-700 text-white border-none rounded-xl px-8 shadow-lg shadow-indigo-200/50 transform hover:-translate-y-1 transition-all">
+                                Registrar Club Oficialmente
+                            </button>
+                        </div>
+                   </div>
+                </form>
+            </div>
+
+            <!-- Footer Modal -->
+            <div class="modal-action bg-white p-6 m-0 border-t border-slate-100 flex justify-end gap-3 sticky bottom-0 z-20">
+                <form method="dialog">
+                    <button class="btn btn-ghost rounded-xl text-slate-500">Cancelar</button>
+                </form>
+            </div>
+        </div>
+        <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+        </form>
+    </dialog>
+
+    <!-- MODAL 2: REGISTRAR COORDINADOR -->
+    <dialog id="modal_registrar_coordinador" class="modal modal-bottom sm:modal-middle">
+        <div class="modal-box w-11/12 max-w-3xl bg-white rounded-[2rem] p-0 overflow-hidden shadow-2xl">
+
+            <!-- Header Modal -->
+            <div class="bg-indigo-600 p-6 text-white flex justify-between items-center sticky top-0 z-20">
+                <h3 class="font-bold text-xl flex items-center gap-2">
+                    <i class="ph-bold ph-user-plus"></i> Registrar Coordinador
+                </h3>
+                <form method="dialog">
+                    <button class="btn btn-circle btn-sm btn-ghost text-white hover:bg-white/20">
+                        <i class="ph-bold ph-x"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Main Modal -->
+            <div class="p-8 pb-32 max-h-[70vh] overflow-y-auto space-y-6">
+                <form th:action="@{/administrador/registrar-coordinador}" method="post" class="space-y-6">
+                    
+                    <!-- Sección 1: Información General -->
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <h4 class="text-sm font-bold text-indigo-600 uppercase tracking-wide mb-4 flex items-center gap-2">
+                            <i class="ph-duotone ph-info"></i> Información General
+                        </h4>
+                    
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                            <!-- Nombre(s) -->
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-bold text-slate-600">Nombre(s)</span>
+                                </label>
+                                <input type="text" name="nombre" placeholder="Ingresa el nombre del coordinador" class="input input-bordered rounded-xl bg-white w-full" />
+                            </div>
+
+                            <!-- Apellidos -->
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-bold text-slate-600">Apellidos</span>
+                                </label>
+                                <input type="text" name="apellidos" placeholder="Ingresa los apellidos del coordinador" class="input input-bordered rounded-xl bg-white w-full" />
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Usuario -->
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-bold text-slate-600">Usuario</span>
+                                </label>
+                                <input type="text" name="usuario" placeholder="Ingresa un nombre de usuario" class="input input-bordered rounded-xl bg-white w-full" />
+                            </div>
+
+                            <!-- Contraseña -->
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-bold text-slate-600">Contraseña</span>
+                                </label>
+                                <input type="password" name="password" placeholder="••••••••" class="input input-bordered rounded-xl bg-white w-full" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección 2: Información de Contacto -->
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <h4 class="text-sm font-bold text-indigo-600 uppercase tracking-wide mb-4 flex items-center gap-2">
+                            <i class="ph-duotone ph-envelope"></i> Información de Contacto
+                        </h4>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Correo -->
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-bold text-slate-600">Correo</span>
+                                </label>
+                                <input type="email" name="correo" placeholder="ejemplo@ipn.mx" class="input input-bordered rounded-xl bg-white w-full" />
+                            </div>
+
+                            <!-- Teléfono -->
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-bold text-slate-600">Teléfono</span>
+                                </label>
+                                <input type="text" name="telefono" placeholder="Ej. 55123456" class="input input-bordered rounded-xl bg-white w-full" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección 3: Registro de Clubes -->
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <h4 class="text-sm font-bold text-indigo-600 uppercase tracking-wide mb-4 flex items-center gap-2">
+                            <i class="ph-duotone ph-books"></i> Registro de Clubes
+                        </h4>
+
+                        <!-- Contenedor dinámico -->
+                        <div id="clubs-container" class="space-y-3"></div>
+
+                        <!-- Botón Agregar Club-->
+                        <div class="mt-4">
+                            <button type="button"
+                                    id="add-club-btn"
+                                    onclick="addClubField()"
+                                    class="btn btn-sm bg-indigo-100 text-indigo-700 hover:bg-indigo-200 border-none rounded-xl gap-2">
+                                <i class="ph-bold ph-plus"></i> Agregar Club
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Botón Registrar Coordinador -->
+                    <div class="flex justify-center pt-6">
+                        <button type="submit"
+                                class="btn bg-indigo-600 hover:bg-indigo-700 text-white border-none rounded-xl px-10 shadow-lg shadow-indigo-200/50 transform hover:-translate-y-1 transition-all">
+                            Registrar Coordinador
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Footer Modal -->
+            <div class="modal-action bg-white p-6 m-0 border-t border-slate-100 flex justify-end sticky bottom-0 z-20">
+                <form method="dialog">
+                    <button class="btn btn-ghost rounded-xl text-slate-500">Cancelar</button>
+                </form>
+            </div>
+        </div>
+        <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+        </form>
+    </dialog>
+
+    <script>
+        const MAX_CLUBS = 10;
+
+        // Iniciar en dashboard
+        switchView('dashboard');
+
+        function switchView(viewName) {
+            // Ocultar todas las vistas
+            ['dashboard', 'clubes', 'alumnos', 'coordinadores'].forEach(v => {
+                document.getElementById('view-' + v).classList.add('hidden');
+                
+                // Reset estilos nav
+                const btn = document.getElementById('nav-' + v);
+                if(btn) btn.className = "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-500 hover:bg-slate-50 transition-colors";
+            });
+
+            // Mostrar seleccionada
+            document.getElementById('view-' + viewName).classList.remove('hidden');
+            
+            // Activar estilo nav
+            const activeBtn = document.getElementById('nav-' + viewName);
+            if(activeBtn) activeBtn.className = "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold bg-escom-adminSoft text-indigo-700 transition-colors shadow-sm";
+        }
+
+        function addClubField() {
+            const container = document.getElementById('clubs-container');
+            const addBtn = document.getElementById('add-club-btn');
+            const currentCount = container.children.length;
+
+            if (currentCount >= MAX_CLUBS) return;
+        
+            const index = currentCount + 1;
+
+            const row = document.createElement('div');
+            row.className = 'flex items-center gap-3';
+
+            row.innerHTML = `
+                <input type="text"
+                    name="clubes[]"
+                    placeholder="Nombre del club"
+                    class="input input-bordered rounded-xl bg-white w-full" />
+
+                <button type="button"
+                    onclick="removeClubField(this)"
+                    class="btn btn-ghost btn-sm text-red-500 hover:text-red-700">
+                    <i class="ph-bold ph-trash"></i>
+                </button>
+            `;
+
+            container.appendChild(row);
+            toggleAddButton()
+        }
+
+        function removeClubField(button) {
+            const container = document.getElementById('clubs-container');
+            button.parentElement.remove();
+            toggleAddButton();
+        }
+
+        function toggleAddButton() {
+            const container = document.getElementById('clubs-container');
+            const addBtn = document.getElementById('add-club-btn');
+
+            if (container.children.length >= MAX_CLUBS) {
+                addBtn.classList.add('hidden');
+            } else {
+                addBtn.classList.remove('hidden');
+            }
+        }
+    </script>
+</body>
+</html>

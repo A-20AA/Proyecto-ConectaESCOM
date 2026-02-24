@@ -5,9 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -18,12 +15,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity  
-@Table(name = "alumnos")
+@Entity
+@Table(name = "coordinadores")
 @NoArgsConstructor
-@Getter 
+@Getter
 @Setter
-public class Alumno {
+public class Coordinador {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,10 +33,10 @@ public class Alumno {
     private String apellidos;
 
     @Column(nullable = false, unique = true)
-    private String boleta;
+    private String usuario;
 
     @Column(nullable = false)
-    private String carrera;
+    private String password;
 
     @Column(nullable = false, unique = true)
     private String correo;
@@ -47,26 +44,9 @@ public class Alumno {
     @Column
     private String telefono;
 
-    @Column(nullable = false)
-    private String password;
-
     @Column
     private String rutaFotoPerfil;
 
-    @Column
-    private String rutaArchivoImss;
-
-    @Column
-    private String rutaArchivoCredencial;
-
-    @OneToMany(mappedBy = "presidenteClub")
-    private Set<Club> clubesDondeEsPresidente = new HashSet<>();
-
-    @ManyToMany
-    @JoinTable(
-        name = "alumno_club",
-        joinColumns = @JoinColumn(name = "alumno_id"),
-        inverseJoinColumns = @JoinColumn(name = "club_id")
-    )
-    private Set<Club> clubesInscritos = new HashSet<>();
+    @OneToMany(mappedBy = "coordinadorClub")
+    private Set<Club> clubesAsignados = new HashSet<>();
 }

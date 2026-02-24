@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrador - Editar Coordinador</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.7.3/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        escom: { main: '#0EA5E9', dark: '#0284C7', deep: '#0F172A', soft: '#F0F9FF', admin: '#4F46E5', adminDark: '#4338ca' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    borderRadius: { 'super': '2rem' },
+                    boxShadow: { 'soft': '0 20px 40px -15px rgba(79, 70, 229, 0.1)' }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .glass-panel { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.6); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col relative">
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-black text-slate-800 mb-8">Editar Coordinador: <span class="text-escom-admin font-bold" th:text="${coordinador.usuario}">[Usuario del Coordinador]</span></h1>
+
+        <!-- Formulario de Edición de Coordinador -->
+        <form th:action="@{/administrador/editar-coordinador}" method="post" class="space-y-8">
+            <input type="hidden" name="id" th:value="${coordinador.id}" />
+
+            <!-- Sección 1: Información General -->
+            <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-xl shadow-indigo-50/50">
+                <h4 class="text-sm font-bold text-escom-admin uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <i class="ph-duotone ph-info text-lg"></i> Información General
+                </h4>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <!-- Nombre(s) -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-bold text-slate-600">Nombre(s)</span>
+                        </label>
+                        <input type="text" name="nombre" th:value="${coordinador.nombre}" placeholder="Ingresa el nombre del coordinador" class="input input-bordered rounded-xl bg-slate-50 focus:bg-white focus:border-escom-admin w-full" />
+                    </div>
+
+                    <!-- Apellidos -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-bold text-slate-600">Apellidos</span>
+                        </label>
+                        <input type="text" name="apellidos" th:value="${coordinador.apellidos}" placeholder="Ingresa los apellidos del coordinador" class="input input-bordered rounded-xl bg-slate-50 focus:bg-white focus:border-escom-admin w-full" />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <!-- Usuario -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-bold text-slate-600">Usuario</span>
+                        </label>
+                        <input type="text" name="usuario" th:value="${coordinador.usuario}" placeholder="Ingresa un nombre de usuario" class="input input-bordered rounded-xl bg-slate-50 focus:bg-white focus:border-escom-admin w-full" />
+                    </div>
+
+                    <!-- Contraseña -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-bold text-slate-600">Contraseña</span>
+                        </label>
+                        <input type="password" name="password" placeholder="••••••••" class="input input-bordered rounded-xl bg-slate-50 focus:bg-white focus:border-escom-admin w-full" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección 2: Información de Contacto -->
+            <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-xl shadow-indigo-50/50">
+                <h4 class="text-sm font-bold text-escom-admin uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <i class="ph-duotone ph-envelope text-lg"></i> Información de Contacto
+                </h4>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <!-- Correo -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-bold text-slate-600">Correo</span>
+                        </label>
+                        <input type="email" name="correo" th:value="${coordinador.correo}" placeholder="ejemplo@ipn.mx" class="input input-bordered rounded-xl bg-slate-50 focus:bg-white focus:border-escom-admin w-full" />
+                    </div>
+
+                    <!-- Teléfono -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-bold text-slate-600">Teléfono</span>
+                        </label>
+                        <input type="text" name="telefono" th:value="${coordinador.telefono}" placeholder="Ej. 55123456" class="input input-bordered rounded-xl bg-slate-50 focus:bg-white focus:border-escom-admin w-full" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección 3: Registro de Clubes -->
+            <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-xl shadow-indigo-50/50">
+                <h4 class="text-sm font-bold text-escom-admin uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <i class="ph-duotone ph-books text-lg"></i> Registro de Clubes
+                </h4>
+
+                <!-- Contenedor dinámico con los clubes actuales -->
+                <div id="clubs-container" class="space-y-3">
+                    <div th:each="club : ${coordinador.clubesAsignados}">
+                        <div class="flex items-center gap-4">
+                            <span th:text="${club.nombre}" class="font-medium text-slate-600"></span>
+                            <button type="button" class="btn btn-sm bg-red-500 text-white rounded-lg" onclick="removeClubField(this)">
+                                <i class="ph-bold ph-trash"></i> Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botón Agregar Club-->
+                <div class="mt-6 text-center">
+                    <button type="button"
+                            id="add-club-btn"
+                            onclick="addClubField()"
+                            class="btn bg-escom-admin hover:bg-indigo-700 text-white border-none rounded-xl px-4 py-2 gap-2">
+                        <i class="ph-bold ph-plus"></i> Agregar Club
+                    </button>
+                </div>
+            </div>
+
+            <!-- Botón Guardar Cambios -->
+            <div class="flex justify-center pt-8">
+                <button type="submit"
+                        class="btn bg-escom-admin hover:bg-indigo-700 text-white border-none rounded-xl px-10 py-3 shadow-lg shadow-indigo-200/50 transform hover:-translate-y-1 transition-all">
+                    Guardar Cambios
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const MAX_CLUBS = 10;
+
+        function addClubField() {
+            const container = document.getElementById('clubs-container');
+            const addBtn = document.getElementById('add-club-btn');
+            const currentCount = container.children.length;
+
+            if (currentCount >= MAX_CLUBS) return;
+        
+            const index = currentCount + 1;
+
+            const row = document.createElement('div');
+            row.className = 'flex items-center gap-3';
+
+            row.innerHTML = `
+                <input type="text"
+                    name="clubes[]"
+                    placeholder="Nombre del club"
+                    class="input input-bordered rounded-xl bg-white w-full" />
+
+                <button type="button"
+                    onclick="removeClubField(this)"
+                    class="btn btn-ghost btn-sm text-red-500 hover:text-red-700">
+                    <i class="ph-bold ph-trash"></i>
+                </button>
+            `;
+
+            container.appendChild(row);
+            toggleAddButton()
+        }
+
+        function removeClubField(button) {
+            const container = document.getElementById('clubs-container');
+            button.parentElement.remove();
+            toggleAddButton();
+        }
+
+        function toggleAddButton() {
+            const container = document.getElementById('clubs-container');
+            const addBtn = document.getElementById('add-club-btn');
+
+            if (container.children.length >= MAX_CLUBS) {
+                addBtn.classList.add('hidden');
+            } else {
+                addBtn.classList.remove('hidden');
+            }
+        }
+    </script>
+</body>
+</html>

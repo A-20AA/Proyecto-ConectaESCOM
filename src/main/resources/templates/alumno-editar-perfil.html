@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alumno Editar Perfil | Conecta ESCOM</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.7.3/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        escom: {
+                            main: '#0EA5E9',
+                            dark: '#0369A1',
+                            deep: '#1E293B',
+                            soft: '#F8FAFC',
+                            light: '#F1F5F9',
+                            accent: '#64748B'
+                        }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    borderRadius: { 'super': '1.5rem' }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+        .form-card { background: white; border-radius: 1.5rem; border: 1px solid #f1f5f9; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); }
+    </style>
+</head>
+<body class="bg-escom-soft text-escom-deep min-h-screen antialiased">
+
+    <main class="max-w-4xl mx-auto py-16 px-6">
+        
+        <div class="flex items-center gap-4 mb-8">
+            <a th:href="@{/alumno/inicio}" class="btn btn-circle btn-ghost text-escom-main">
+                <i class="ph-bold ph-arrow-left text-2xl"></i>
+            </a>
+            <div>
+                <p class="text-escom-accent font-medium">Conecta <span class="text-escom-main">ESCOM</span></p>
+                <h1 class="text-3xl font-extrabold tracking-tight">Panel de Edición: <span th:text="${alumno.nombre}">Nombre del Alumno</span></h1>               
+            </div>
+        </div>
+
+        <!-- Mensaje de éxito -->
+        <div th:if="${success != null}" class="alert alert-success p-4 mb-6 bg-green-100 text-green-800 rounded-xl border border-green-300 shadow-lg transform transition-all">
+            <p th:text="${success}"></p>
+        </div>
+
+        <!-- Mensaje de error -->
+        <div th:if="${error != null}" class="alert alert-error p-4 mb-6 bg-red-100 text-red-800 rounded-xl border border-red-300 shadow-lg transform transition-all">
+            <p th:text="${error}"></p>
+        </div>
+
+        <div class="grid grid-cols-1 gap-8">
+            
+            <!-- SECCIÓN 1: Foto de Perfil -->
+            <section class="form-card p-8">
+                <div class="flex items-center gap-3 mb-6">
+                    <i class="ph-fill ph-image-square text-escom-main text-2xl"></i>
+                    <h2 class="text-xl font-bold">Foto de Perfil</h2>
+                </div>
+                
+                <div class="flex flex-col md:flex-row items-center gap-8">
+                    <div class="relative group">
+                        <div class="w-48 h-48 rounded-super overflow-hidden border-4 border-white shadow-xl">
+                            <img th:src="@{ '/' + ${alumno.rutaFotoPerfil} }" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                        </div>
+                        <div class="absolute -bottom-2 -right-2 bg-escom-main text-white p-2 rounded-lg shadow-lg">
+                            <i class="ph-bold ph-pencil-simple"></i>
+                        </div>
+                    </div>
+
+                    <form th:action="@{/alumno/editar-perfil/foto}" method="post" enctype="multipart/form-data" class="flex-1 space-y-4 w-full">
+                        <input type="hidden" name="id" th:value="${alumno.id}" />
+                        <div class="form-control">
+                            <label class="label"><span class="label-text font-bold text-slate-600">Subir nueva imagen</span></label>
+                            <input type="file" name="fotoAlumno" accept="image/*" class="file-input file-input-bordered file-input-info w-full" />
+                        </div>
+                        <button type="submit" class="btn bg-escom-main border-none text-white hover:bg-escom-dark shadow-lg shadow-blue-200 px-8">
+                            Actualizar Imagen
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- SECCIÓN 2: Información del Alumno -->
+            <section class="form-card p-8">
+                <div class="flex items-center gap-3 mb-8">
+                    <i class="ph-fill ph-note-pencil text-escom-main text-2xl"></i>
+                    <h2 class="text-xl font-bold">Información General</h2>
+                </div>
+
+                <form th:action="@{/alumno/editar-perfil/datos}" method="post" class="space-y-6" enctype="multipart/form-data">
+                    <input type="hidden" name="id" th:value="${alumno.id}" />
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
+                        <!-- Nombre -->
+                        <div class="form-control">
+                            <label class="label"><span class="label-text font-bold text-slate-600">Nombre(s)</span></label>
+                            <input type="text" name="nombre" th:value="${alumno.nombre}" class="input input-bordered focus:border-escom-main rounded-xl" required />
+                        </div>
+
+                        <!-- Apellidos -->
+                        <div class="form-control">
+                            <label class="label"><span class="label-text font-bold text-slate-600">Apellidos</span></label>
+                            <input type="text" name="apellidos" th:value="${alumno.apellidos}" class="input input-bordered focus:border-escom-main rounded-xl" required />
+                        </div>                       
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
+                        <!-- Correo -->
+                        <div class="form-control">
+                            <label class="label"><span class="label-text font-bold text-slate-600">Correo</span></label>
+                            <input type="text" name="correo" th:value="${alumno.correo}" class="input input-bordered focus:border-escom-main rounded-xl" required />
+                        </div>
+
+                        <!-- Telefono -->
+                        <div class="form-control">
+                            <label class="label"><span class="label-text font-bold text-slate-600">Teléfono</span></label>
+                            <input type="text" name="telefono" th:value="${alumno.telefono}" class="input input-bordered focus:border-escom-main rounded-xl" required />
+                        </div>                       
+                    </div>
+
+                    <!-- Carrera -->
+                    <div class="form-control">
+                        <label class="label"><span class="label-text font-bold text-slate-600">Carrera</span></label>
+                        <select name="carrera" class="select select-bordered rounded-xl bg-slate-50 focus:bg-white focus:border-escom-main text-slate-700">
+                            <option th:selected="${alumno.carrera == 'Ingeniería en Sistemas Computacionales'}">Ingeniería en Sistemas Computacionales</option>
+                            <option th:selected="${alumno.carrera == 'Ingeniería en Inteligencia Artificial'}">Ingeniería en Inteligencia Artificial</option>
+                            <option th:selected="${alumno.carrera == 'Licenciatura en Ciencia de Datos'}">Licenciatura en Ciencia de Datos</option>
+                        </select>
+                    </div>
+
+                   <!-- Cambiar Contraseña -->
+                    <div class="form-control">
+                        <label class="label"><span class="label-text font-bold text-slate-600">Nueva Contraseña</span></label>
+                        <input type="password" name="password" class="input input-bordered focus:border-escom-main rounded-xl"/>                       
+                    </div>
+
+                    <!-- Actualizar Documentos -->
+                    <div class="p-6 bg-slate-50 rounded-2xl border border-dashed border-slate-300">
+                        <label class="flex items-center gap-2 mb-2 font-bold text-slate-600">
+                            <i class="ph-bold ph-folder-notch-open text-red-500 text-xl"></i>
+                            Comprobante IMSS (PDF)
+                        </label>
+                        <input type="file" name="archivoImss" accept=".pdf" class="file-input file-input-ghost w-full bg-white border-slate-200" />
+                        <p class="text-xs text-escom-accent mt-2 flex items-center gap-1">
+                            <i class="ph-bold ph-info"></i> Reemplaza el archivo actual subiendo uno nuevo.
+                        </p>
+                    </div>
+
+                    <div class="p-6 bg-slate-50 rounded-2xl border border-dashed border-slate-300">
+                        <label class="flex items-center gap-2 mb-2 font-bold text-slate-600">
+                            <i class="ph-bold ph-folder-notch-open text-green-500 text-xl"></i>
+                            Credencial IPN (PDF)
+                        </label>
+                        <input type="file" name="archivoCredencial" accept=".pdf" class="file-input file-input-ghost w-full bg-white border-slate-200" />
+                        <p class="text-xs text-escom-accent mt-2 flex items-center gap-1">
+                            <i class="ph-bold ph-info"></i> Reemplaza el archivo actual subiendo uno nuevo.
+                        </p>
+                    </div>
+
+                    <!-- Guardar Cambios -->
+                    <div class="pt-4">
+                        <button type="submit" class="btn btn-block bg-escom-deep border-none text-white hover:bg-slate-900 shadow-xl rounded-xl gap-2">
+                            <i class="ph-bold ph-floppy-disk text-xl"></i>
+                            Guardar Todos los Cambios
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </main>
+</body>
+</html>
